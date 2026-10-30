@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b14">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PixelAI">
+<link rel="manifest" href="./manifest.json">
+<script src="./engine.js" defer></script>
+<link rel="icon" href="./pixelai-icon.svg" type="image/svg+xml">
+<meta name="description" content="PixelAI Studio: prototipo mobile per migliorare foto e preparare idee video.">
+<title>PixelAI Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0b14;--panel:#171526;--line:#39304f;--accent:#a88aff;--text:#f5f3ff;--muted:#c7bddb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{padding:calc(22px + env(safe-area-inset-top)) 20px 22px;background:#151326;border-bottom:1px solid var(--line)}
+h1{margin:0;color:#c5b2ff;font-size:28px}header p{color:var(--muted);margin:8px 0 0}
+main{padding:18px 14px calc(30px + env(safe-area-inset-bottom));max-width:680px;margin:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+h2{font-size:19px;margin:0 0 12px}
+p{line-height:1.5}.notice{color:var(--muted);font-size:13px;line-height:1.55}
+button{display:inline-block;background:#8057ed;color:white;border:0;border-radius:12px;padding:13px 16px;font-size:15px;font-weight:650;cursor:pointer;min-height:44px}
+button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:#302644}
+input[type=file]{width:100%;margin:12px 0;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent);min-height:28px}
+label{display:block;margin:16px 0 8px}
+input[type=text],select{width:100%;padding:13px;border-radius:10px;border:1px solid #504366;background:var(--bg);color:white;font-size:16px}
+canvas{display:block;max-width:100%;height:auto;max-height:65vh;object-fit:contain;border-radius:12px;margin:14px auto;background:#090910}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions button{flex:1 1 145px}.hidden{display:none!important}
+footer{text-align:center;color:#9288a8;padding:0 18px 25px;font-size:12px}
+:focus-visible{outline:3px solid #c5b2ff;outline-offset:3px}
+</style>
+</head>
+<body>
+<header><h1>✦ PixelAI Studio</h1><p>Le tue idee, la tua creatività.</p></header>
+<main>
+<section class="card" aria-labelledby="photoTitle">
+<h2 id="photoTitle">📸 Migliora le tue foto</h2>
+<p class="notice">Carica una foto e regola luminosità, contrasto e saturazione. L'elaborazione avviene sul dispositivo nel browser: la foto non viene inviata a un server.</p>
+<label for="file">Scegli una foto</label>
+<input id="file" type="file" accept="image/jpeg,image/png,image/webp">
+<div id="editor" class="hidden">
+<label for="brightness">Luminosità: <output id="brightnessValue">100%</output></label><input id="brightness" type="range" min="50" max="150" value="100">
+<label for="contrast">Contrasto: <output id="contrastValue">100%</output></label><input id="contrast" type="range" min="50" max="150" value="100">
+<label for="saturation">Saturazione: <output id="saturationValue">100%</output></label><input id="saturation" type="range" min="0" max="200" value="100">
+<canvas id="canvas" aria-label="Anteprima della foto modificata"></canvas>
+<div class="actions"><button id="rotateLeft" class="secondary" type="button" aria-label="Ruota foto a sinistra">↶ Ruota</button><button id="rotateRight" class="secondary" type="button" aria-label="Ruota foto a destra">↷ Ruota</button><button id="save" type="button">Salva foto</button><button id="reset" class="secondary" type="button">Ripristina</button></div>
+</div>
+<p id="status" class="notice" role="status" aria-live="polite">Seleziona una foto per iniziare. Limite prototipo: 20 MB e 32 megapixel.</p>
+</section>
+<section class="card" aria-labelledby="videoTitle">
+<h2 id="videoTitle">🎬 Motore PixelAI · nucleo creativo</h2>
+<p>Il motore analizza la descrizione, la trasforma in istruzioni strutturate e prepara un progetto pronto per un futuro modello generativo.</p>
+<label for="scene">Descrivi la scena</label><input id="scene" type="text" maxlength="500" placeholder="Es. Io in una scena spaziale">
+<label for="style">Stile video</label><select id="style"><option>Cinematografico</option><option>Fantascienza</option><option>Fantasy</option><option>Animazione</option><option>Realistico</option></select>
+<div class="actions"><button id="brief" type="button">Elabora con PixelAI</button><button id="saveProject" class="secondary" type="button">Salva progetto</button></div>
+<pre id="engineOutput" class="notice" style="white-space:pre-wrap;overflow-wrap:anywhere;background:#0d0b16;border:1px solid var(--line);border-radius:10px;padding:12px" aria-live="polite">Il motore è pronto: inserisci una scena e premi “Elabora con PixelAI”.</pre>
+<p id="result" class="notice" role="status" aria-live="polite">Il nucleo creativo genera un brief strutturato, non ancora immagini o video reali. Nessun volto viene modificato.</p>
+<h3 style="font-size:16px;margin:18px 0 8px">I miei progetti salvati su questo dispositivo</h3>
+<ul id="projectList" class="notice" aria-live="polite" style="padding-left:20px"></ul>
+<p class="notice">I progetti salvati restano in questo browser. Non vengono sincronizzati online: cancellando i dati del sito potresti perderli.</p>
+</section>
+<section class="card" aria-labelledby="premiumTitle">
+<h2 id="premiumTitle">⭐ PixelAI Premium</h2><p>Prezzo previsto: <strong>8,99 € al mese</strong></p>
+<p class="notice">Abbonamento e pagamenti non sono attivi. Nessun pagamento viene richiesto da questo prototipo.</p>
+</section>
+</main>
+<footer>PixelAI Studio · Prototipo sperimentale · Versione 0.8<br><a href="./privacy.html" style="color:#c5b2ff">Informativa privacy</a></footer>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const fileInput = $('file');
+const canvas = $('canvas');
+const ctx = canvas.getContext('2d', {alpha:false});
+const editor = $('editor');
+const status = $('status');
+const sliders = ['brightness','contrast','saturation'];
+const MAX_FILE_BYTES = 20 * 1024 * 1024;
+const MAX_PIXELS = 32_000_000;
+const MAX_EDGE = 2400;
+let photo = null;
+let rotation = 0;
+let sourceURL = null;
+let loadToken = 0;
+let renderQueued = false;
+
+function setStatus(message){ status.textContent = message; }
+function revokeSource(){
+  if(sourceURL){ URL.revokeObjectURL(sourceURL); sourceURL = null; }
+}
+function render(){
+  if(!photo || !ctx) return;
+  const scale = Math.min(1, MAX_EDGE/photo.naturalWidth, MAX_EDGE/photo.naturalHeight);
+  const sourceWidth = Math.max(1, Math.round(photo.naturalWidth * scale));
+  const sourceHeight = Math.max(1, Math.round(photo.naturalHeight * scale));
+  const quarterTurn = Math.abs(rotation % 180) === 90;
+  canvas.width = quarterTurn ? sourceHeight : sourceWidth;
+  canvas.height = quarterTurn ? sourceWidth : sourceHeight;
+  ctx.save();
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate(rotation * Math.PI / 180);
+  ctx.filter = 'brightness(' + $('brightness').value + '%) contrast(' + $('contrast').value + '%) saturate(' + $('saturation').value + '%)';
+  ctx.drawImage(photo, -sourceWidth / 2, -sourceHeight / 2, sourceWidth, sourceHeight);
+  ctx.filter = 'none';
+  ctx.restore();
+  sliders.forEach(id => $(id+'Value').textContent = $(id).value + '%');
+}
+function scheduleRender(){
+  if(renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(() => { renderQueued = false; render(); });
+}
+fileInput.addEventListener('change', () => {
+  const selected = fileInput.files && fileInput.files[0];
+  if(!selected) return;
+  if(!['image/jpeg','image/png','image/webp'].includes(selected.type)){
+    setStatus('Formato non valido: scegli un file immagine.');
+    fileInput.value = '';
+    return;
+  }
+  if(selected.size > MAX_FILE_BYTES){
+    setStatus('La foto supera il limite di 20 MB. Scegli un file più piccolo.');
+    fileInput.value = '';
+    return;
+  }
+  const token = ++loadToken;
+  revokeSource();
+  photo = null;
+  editor.classList.add('hidden');
+  const nextURL = URL.createObjectURL(selected);
+  sourceURL = nextURL;
+  const nextImage = new Image();
+  nextImage.onload = () => {
+    if(token !== loadToken){ URL.revokeObjectURL(nextURL); return; }
+    const pixels = nextImage.naturalWidth * nextImage.naturalHeight;
+    if(!pixels || pixels > MAX_PIXELS){
+      revokeSource();
+      setStatus('Immagine troppo grande da elaborare (limite 32 megapixel). Prova una versione ridotta.');
+      fileInput.value = '';
+      return;
+    }
+    photo = nextImage;
+    editor.classList.remove('hidden');
+    render();
+    setStatus('Foto pronta. Modifica i cursori e premi “Salva foto”.');
+  };
+  nextImage.onerror = () => {
+    if(token !== loadToken) return;
+    revokeSource();
+    photo = null;
+    fileInput.value = '';
+    setStatus('Impossibile aprire questa immagine. Prova un altro file.');
+  };
+  nextImage.src = nextURL;
+  setStatus('Caricamento foto…');
+});
+sliders.forEach(id => $(id).addEventListener('input', scheduleRender));
+function rotatePhoto(degrees){
+  if(!photo) return;
+  rotation = (rotation + degrees + 360) % 360;
+  render();
+  setStatus('Rotazione aggiornata. Puoi salvare la foto quando vuoi.');
+}
+$('rotateLeft').addEventListener('click', () => rotatePhoto(-90));
+$('rotateRight').addEventListener('click', () => rotatePhoto(90));
+$('reset').addEventListener('click', () => {
+  sliders.forEach(id => $(id).value = 100);
+  rotation = 0;
+  scheduleRender();
+  setStatus('Modifiche e rotazione ripristinate.');
+});
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+$('save').addEventListener('click', async () => {
+  if(!photo) return;
+  $('save').disabled = true;
+  setStatus('Preparazione della foto…');
+  try{
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(result => result ? resolve(result) : reject(new Error('PNG non disponibile')), 'image/png');
+    });
+    const output = new File([blob], 'pixelai-foto.png', {type:'image/png'});
+    let shared = false;
+    if(navigator.share && navigator.canShare){
+      try{
+        if(navigator.canShare({files:[output]})){
+          await navigator.share({files:[output], title:'Foto modificata con PixelAI Studio'});
+          shared = true;
+        }
+      }catch(error){
+        if(error && error.name === 'AbortError'){
+          setStatus('Condivisione annullata.');
+          return;
+        }
+      }
+    }
+    if(shared) setStatus('Condivisione completata.');
+    else{
+      downloadBlob(blob, 'pixelai-foto.png');
+      setStatus('Esportazione PNG avviata. Su iPhone, controlla File o il menu Condividi del browser.');
+    }
+  }catch(error){
+    setStatus('Esportazione non riuscita. Riprova con una foto più piccola.');
+  }finally{
+    $('save').disabled = false;
+  }
+});
+const PROJECTS_KEY = 'pixelai.projects.v1';
+function readProjects(){
+  try{
+    const value = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+    return Array.isArray(value) ? value.filter(item => item && typeof item.id === 'string' && typeof item.scene === 'string' && typeof item.style === 'string' && typeof item.createdAt === 'string').slice(0,20) : [];
+  }catch(error){ return []; }
+}
+function renderProjects(){
+  const list = $('projectList');
+  list.replaceChildren();
+  const projects = readProjects();
+  if(!projects.length){
+    const empty = document.createElement('li');
+    empty.textContent = 'Nessun progetto salvato.';
+    list.appendChild(empty);
+    return;
+  }
+  projects.forEach(project => {
+    const item = document.createElement('li');
+    item.style.marginBottom = '12px';
+    const title = document.createElement('span');
+    title.textContent = project.scene + ' · ' + project.style + ' · ' + new Date(project.createdAt).toLocaleDateString('it-IT');
+    item.appendChild(title);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'secondary';
+    remove.textContent = 'Elimina';
+    remove.style.marginLeft = '8px';
+    remove.style.padding = '7px 10px';
+    remove.addEventListener('click', () => {
+      try{
+        localStorage.setItem(PROJECTS_KEY, JSON.stringify(readProjects().filter(entry => entry.id !== project.id)));
+        renderProjects();
+        $('result').textContent = 'Progetto eliminato da questo dispositivo.';
+      }catch(error){ $('result').textContent = 'Impossibile aggiornare i progetti salvati.'; }
+    });
+    item.appendChild(remove);
+    list.appendChild(item);
+  });
+}
+$('saveProject').addEventListener('click', () => {
+  const scene = $('scene').value.trim();
+  if(!scene){
+    $('result').textContent = 'Descrivi prima la scena.';
+    $('scene').focus();
+    return;
+  }
+  try{
+    const projects = readProjects();
+    const project = {id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2), scene, style:$('style').value, createdAt:new Date().toISOString()};
+    projects.unshift(project);
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects.slice(0,20)));
+    renderProjects();
+    $('result').textContent = 'Progetto salvato solo su questo dispositivo.';
+  }catch(error){
+    $('result').textContent = 'Salvataggio non disponibile: controlla lo spazio libero del browser.';
+  }
+});
+renderProjects();
+$('brief').addEventListener('click', () => {
+  const scene = $('scene').value.trim();
+  if(!scene){
+    $('result').textContent = 'Descrivi prima la scena.';
+    $('scene').focus();
+    return;
+  }
+  if(!window.PixelAIEngine){
+    $('result').textContent = 'Motore non caricato. Aggiorna la pagina e riprova.';
+    return;
+  }
+  try{
+    const project = window.PixelAIEngine.buildPrompt({
+      scene,
+      style:$('style').value,
+      output:'video',
+      language:'it'
+    });
+    $('engineOutput').textContent = window.PixelAIEngine.formatPreview(project);
+    const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
+    downloadBlob(blob, 'pixelai-engine-project.json');
+    $('result').textContent = 'Brief elaborato dal nucleo PixelAI ed esportato. La generazione multimediale reale richiede ancora un modello generativo e un server di inferenza.';
+  }catch(error){
+    $('result').textContent = 'Il motore non è riuscito a elaborare questa descrizione. Riprova.';
+  }
+});
+window.addEventListener('beforeunload', revokeSource);
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
