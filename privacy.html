@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b14">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<title>Informativa privacy · PixelAI Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0b14;--panel:#171526;--line:#39304f;--text:#f5f3ff;--muted:#c7bddb;--accent:#c5b2ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.65}
+header{padding:calc(22px + env(safe-area-inset-top)) 20px 20px;background:#151326;border-bottom:1px solid var(--line)}
+main{max-width:760px;margin:auto;padding:22px 16px calc(32px + env(safe-area-inset-bottom))}
+h1{margin:0;color:var(--accent);font-size:26px}h2{font-size:19px;margin:26px 0 8px}
+p,li{color:var(--muted)}a{color:var(--accent)}.notice{padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+small{color:#aaa0bd}:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<header><h1>Informativa privacy — PixelAI Studio</h1><p>Bozza informativa per il prototipo, da completare prima del lancio pubblico.</p></header>
+<main>
+<p><strong>Ultimo aggiornamento: 30 ottobre 2026</strong></p>
+<p class="notice"><strong>Importante:</strong> questa pagina descrive il funzionamento attuale del prototipo. Non è una certificazione di conformità legale. Prima della pubblicazione commerciale il titolare deve inserire i propri dati reali, verificare hosting e fornitori, definire i tempi di conservazione e far verificare il testo da un professionista privacy.</p>
+
+<h2>1. Titolare del trattamento</h2>
+<p>Il titolare del trattamento è il soggetto che gestisce PixelAI Studio. <strong>Dato da completare prima del lancio:</strong> nome o ragione sociale, indirizzo, sede, e-mail di contatto e, se nominato, contatto del responsabile della protezione dei dati (DPO). Non utilizzare l'indirizzo e-mail dimostrativo presente nel prototipo come contatto reale.</p>
+
+<h2>2. Quali dati tratta il prototipo</h2>
+<ul>
+<li><strong>Fotografie selezionate nell'editor:</strong> nel prototipo attuale vengono caricate e modificate localmente nel browser. Il codice dell'editor non invia intenzionalmente le immagini a un server PixelAI. Le immagini restano nella memoria temporanea della sessione del browser e vengono rilasciate quando non servono più.</li>
+<li><strong>Descrizioni e progetti video:</strong> vengono elaborati nel browser. I progetti salvati sono conservati nel localStorage del browser sul dispositivo, fino a 20 elementi, e non vengono sincronizzati con PixelAI. L'utente può eliminarli dall'app o cancellare i dati del sito dal browser.</li>
+<li><strong>Dati tecnici di connessione:</strong> il fornitore che ospita il sito può trattare dati tecnici e log del server (per esempio indirizzo IP, data/ora, user-agent e richieste) secondo la propria informativa e configurazione. Il titolare deve verificare il fornitore, i ruoli privacy, i trasferimenti internazionali e i tempi di conservazione prima del lancio.</li>
+</ul>
+
+<h2>3. Finalità e basi giuridiche</h2>
+<p>Le operazioni locali servono a fornire le funzioni richieste dall'utente. Quando applicabile, la base giuridica è l'esecuzione della funzione richiesta dall'utente (art. 6(1)(b) GDPR) o il legittimo interesse alla sicurezza e al funzionamento tecnico del sito (art. 6(1)(f) GDPR), previa valutazione. Le basi giuridiche dei log del fornitore di hosting devono essere verificate e descritte dal titolare.</p>
+
+<h2>4. Funzioni IA remote in sviluppo</h2>
+<p>Il repository contiene un server di inferenza sperimentale separato, ma non è distribuito né collegato all’app pubblica. Se e quando verrà attivato, i prompt inviati al server e le immagini generate saranno trattati dal server e dal provider infrastrutturale necessario a eseguire il modello. La configurazione attuale è progettata per non salvare intenzionalmente prompt o immagini generate; i log tecnici e i log del provider devono comunque essere verificati. Questa informativa dovrà essere aggiornata con titolare, finalità, base giuridica, destinatari, trasferimenti, tempi di conservazione e diritti prima di attivare la funzione.
+
+<h2>5. Volti, immagini e dati biometrici</h2>
+<p>La funzione di sostituzione del volto e la generazione video con il volto dell'utente <strong>non sono attive in questo prototipo</strong>. Una fotografia di un volto non è automaticamente un dato biometrico appartenente a categorie particolari; può diventarlo quando è sottoposta a uno specifico trattamento tecnico volto a identificare in modo univoco una persona. Prima di introdurre riconoscimento, template facciali o face swap occorrerà definire finalità, base giuridica e, se applicabile, una condizione dell'art. 9 GDPR, informativa specifica, misure di sicurezza e valutazione d'impatto (DPIA) quando richiesta. Non caricare immagini di altre persone senza averne titolo e autorizzazione.</p>
+
+<h2>6. Destinatari e trasferimenti</h2>
+<p>Il prototipo non integra attualmente servizi PixelAI di analytics, pubblicità, account, pagamenti o elaborazione IA remota. Il provider di hosting e i fornitori tecnici eventualmente usati per rendere disponibile il sito possono trattare dati tecnici secondo i rispettivi ruoli e contratti. Il titolare deve identificare i fornitori effettivi, verificare eventuali sub-responsabili e trasferimenti fuori dallo Spazio economico europeo e aggiornare questa informativa prima del lancio.</p>
+
+<h2>7. Cookie e archiviazione locale</h2>
+<p>Il prototipo non installa cookie pubblicitari o di profilazione e non integra strumenti di tracciamento analytics. Il service worker può utilizzare la cache del browser per rendere disponibili i file dell'app e supportare il funzionamento offline. Questa cache tecnica non è usata dal prototipo per identificare o profilare l'utente. Il browser consente di cancellare i dati del sito dalle proprie impostazioni.</p>
+
+<h2>8. Conservazione e sicurezza</h2>
+<p>Le immagini dell'editor non sono conservate da un server PixelAI nel prototipo attuale. I file esportati sono salvati o condivisi solo tramite l'azione scelta dall'utente. I log del provider seguono le politiche del provider, che il titolare deve verificare e riportare. Sono adottate misure ragionevoli nel codice, ma nessun servizio online può garantire sicurezza assoluta.</p>
+
+<h2>9. Diritti dell'utente</h2>
+<p>Nei casi previsti dal GDPR, l'interessato può chiedere accesso, rettifica, cancellazione, limitazione, opposizione e portabilità, nonché revocare un consenso senza pregiudicare la liceità del trattamento precedente. Può inoltre proporre reclamo al Garante per la protezione dei dati personali. Per esercitare i diritti, contattare il titolare usando i recapiti reali che dovranno essere inseriti in questa pagina.</p>
+
+<h2>10. Minori</h2>
+<p>Il prototipo non è progettato per raccogliere intenzionalmente dati di minori. Prima di consentire l'uso a minori occorre definire controlli, informative e modalità di consenso conformi alle norme applicabili.</p>
+
+<h2>11. Modifiche e contatti</h2>
+<p>Questa informativa potrà essere aggiornata quando saranno aggiunti account, caricamenti remoti, funzioni IA, pagamenti o altri fornitori. Tali funzioni non devono essere attivate prima di aggiornare la documentazione, le misure di sicurezza e le basi giuridiche pertinenti.</p>
+<p><a href="./index.html">Torna a PixelAI Studio</a></p>
+<small>Documento informativo preliminare. Campi del titolare e contatti devono essere completati prima di rendere il servizio pubblico.</small>
+</main>
+</body>
+</html>
