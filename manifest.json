@@ -1,0 +1,20 @@
+{
+  "name": "PixelAI Studio",
+  "short_name": "PixelAI",
+  "description": "Prototipo mobile per migliorare foto e preparare idee video.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0b14",
+  "theme_color": "#0b0b14",
+  "icons": [
+    {
+      "src": "./pixelai-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
