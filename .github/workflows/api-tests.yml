@@ -1,0 +1,23 @@
+name: PixelAI API tests
+on:
+  push:
+    paths:
+      - "server/**"
+      - ".github/workflows/api-tests.yml"
+  pull_request:
+    paths:
+      - "server/**"
+      - ".github/workflows/api-tests.yml"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r server/requirements-test.txt
+      - run: python -m unittest discover -s server/tests -v
+        env:
+          PYTHONPATH: server
+          PIXELAI_API_TOKEN: "test-token-that-is-longer-than-32-characters"
