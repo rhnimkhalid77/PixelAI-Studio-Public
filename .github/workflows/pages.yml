@@ -1,0 +1,60 @@
+name: Deploy PixelAI Studio to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check required files
+        run: |
+          test -f index.html
+          test -f privacy.html
+          test -f manifest.json
+          test -f sw.js
+          test -f pixelai-icon.svg
+          grep -q 'Content-Security-Policy' index.html
+          grep -q 'Informativa privacy' index.html
+      - name: Check inline JavaScript syntax
+        run: |
+          node --version
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          html = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, flags=re.S|re.I)
+          if not scripts:
+              raise SystemExit("No inline script found")
+          Path("/tmp/pixelai-inline.js").write_text("\n".join(scripts), encoding="utf-8")
+          PY
+          node --check /tmp/pixelai-inline.js
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
